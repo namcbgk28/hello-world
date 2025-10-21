@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 <head>
     <title>Employee Management</title>
     <h:outputStylesheet library="css" name="style.css" />
@@ -13,6 +14,17 @@
         <h:outputText value="#{employeeBean.message}" rendered="#{employeeBean.message != null}" 
                      styleClass="message" />
         
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <h:commandButton value="Add New Employee" action="#{employeeBean.prepareAddEmployee()}" 
+                           styleClass="btn btn-primary" />
+            <h:commandButton value="Load All" action="#{employeeBean.loadAllEmployees()}" 
+                           styleClass="btn btn-success" />
+            <h:commandButton value="Test Connection" action="#{employeeBean.testConnection()}" 
+                           styleClass="btn btn-info" />
+        </div>
+        
+        <!-- Search Section -->
         <div class="search-section">
             <h3>Search Employee</h3>
             <h:form>
@@ -22,12 +34,9 @@
                 </div>
                 <h:commandButton value="Search" action="#{employeeBean.searchEmployee()}" 
                                styleClass="btn" />
-                <h:commandButton value="Load All" action="#{employeeBean.loadAllEmployees()}" 
-                               styleClass="btn btn-success" />
-                <h:commandButton value="Test Connection" action="#{employeeBean.testConnection()}" 
-                               styleClass="btn" />
             </h:form>
         </div>
+        
         
         <h:panelGroup rendered="#{employeeBean.selectedEmployee != null}">
             <div class="employee-detail">
@@ -59,6 +68,18 @@
                 <h:column>
                     <f:facet name="header">Date of Birth</f:facet>
                     #{emp.dateOfBirth}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <div class="action-buttons-inline">
+                        <h:commandButton value="View" action="#{employeeBean.viewEmployee(emp)}" 
+                                       styleClass="btn btn-sm btn-info" />
+                        <h:commandButton value="Edit" action="#{employeeBean.prepareEditEmployee(emp)}" 
+                                       styleClass="btn btn-sm btn-warning" />
+                        <h:commandButton value="Delete" action="#{employeeBean.deleteEmployee(emp)}" 
+                                       styleClass="btn btn-sm btn-danger" 
+                                       onclick="return confirm('Are you sure you want to delete this employee?')" />
+                    </div>
                 </h:column>
             </h:dataTable>
         </h:panelGroup>
