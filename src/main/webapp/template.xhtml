@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+    <title>My JSF App</title>
+    <h:outputStylesheet library="css" name="template.css"/>
+</h:head>
+
+<h:body>
+    <h:form id="mainForm">
+        <div class="layout">
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>Navigation</h3>
+                <ul>
+                    <li>
+                        <h:commandLink value="🏠 Home">
+                            <f:ajax listener="#{layoutBean.loadPage('fragments/home.xhtml')}" render="contentArea"/>
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="👨‍💼 Employees">
+                            <f:ajax listener="#{layoutBean.loadPage('fragments/employeeList.xhtml')}" render="contentArea"/>
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="➕ Add Employee">
+                            <f:ajax listener="#{layoutBean.loadPage('/employee/create.xhtml')}" render="contentArea"/>
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="ℹ️ About">
+                            <f:ajax listener="#{layoutBean.loadPage('fragments/about.xhtml')}" render="contentArea"/>
+                        </h:commandLink>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Header -->
+                <div class="header">
+                    <h2>My JSF Application</h2>
+                </div>
+
+                <!-- Content -->
+                <h:panelGroup id="contentArea">
+                    <ui:include src="#{layoutBean.currentPage}" />
+                </h:panelGroup>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>© 2025 - My JSF Application</p>
+                </div>
+            </div>
+        </div>
+    </h:form>
+</h:body>
+</html>

@@ -22,11 +22,13 @@ public class EmployeeBean implements Serializable {
     private String message;
     private boolean isEditMode;
     private String actionMode; // "add", "edit", "view"
+    private String currentForm; // Current form path
     
     public EmployeeBean() {
         employeeDAO = new EmployeeDAO();
         newEmployee = new Employee();
         actionMode = "view";
+        currentForm = "";
         loadAllEmployees();
     }
     
@@ -61,12 +63,13 @@ public class EmployeeBean implements Serializable {
         }
     }
     
-    public String prepareAddEmployee() {
+    public void prepareAddEmployee() {
+        System.out.println("prepareAddEmployee CALLED");
         newEmployee = new Employee();
         newEmployee.setDateOfBirth(new Date());
         actionMode = "add";
+        currentForm = "/employee/create.xhtml";
         message = "Ready to add new employee";
-        return "add-employee?faces-redirect=true";
     }
     
     public String prepareEditEmployee(Employee employee) {
@@ -81,77 +84,33 @@ public class EmployeeBean implements Serializable {
         return "edit-employee?faces-redirect=true";
     }
     
-    public String saveEmployee() {
-        try {
-            boolean success = false;
-            
-            if ("add".equals(actionMode)) {
-                // Validate employee code uniqueness
-                if (employeeDAO.isEmployeeCodeExists(newEmployee.getEmployeeCode())) {
-                    message = "Employee code already exists: " + newEmployee.getEmployeeCode();
-                    return null; // Stay on current page
-                }
-                success = employeeDAO.createEmployee(newEmployee);
-                if (success) {
-                    message = "Employee created successfully: " + newEmployee.getEmployeeName();
-                } else {
-                    message = "Failed to create employee";
-                    return null; // Stay on current page
-                }
-            } else if ("edit".equals(actionMode)) {
-                success = employeeDAO.updateEmployee(newEmployee);
-                if (success) {
-                    message = "Employee updated successfully: " + newEmployee.getEmployeeName();
-                } else {
-                    message = "Failed to update employee";
-                    return null; // Stay on current page
-                }
-            }
-            
-            if (success) {
-                loadAllEmployees();
-                actionMode = "view";
-                newEmployee = new Employee();
-                return "index?faces-redirect=true"; // Navigate back to list
-            }
-            
-        } catch (Exception e) {
-            message = "Error saving employee: " + e.getMessage();
-            e.printStackTrace();
-        }
-        
-        return null; // Stay on current page if there's an error
-    }
-    
-    public void deleteEmployee(Employee employee) {
-        try {
-            boolean success = employeeDAO.deleteEmployee(employee.getEmployeeCode());
-            if (success) {
-                message = "Employee deleted successfully: " + employee.getEmployeeName();
-                loadAllEmployees();
-                if (selectedEmployee != null && selectedEmployee.getEmployeeCode().equals(employee.getEmployeeCode())) {
-                    selectedEmployee = null;
-                }
-            } else {
-                message = "Failed to delete employee";
-            }
-        } catch (Exception e) {
-            message = "Error deleting employee: " + e.getMessage();
-            e.printStackTrace();
-        }
-    }
-    
-    public String cancelAction() {
+    public void cancelAction() {
         actionMode = "view";
+        currentForm = "";
         newEmployee = new Employee();
         message = "Action cancelled";
-        return "index?faces-redirect=true";
     }
     
     public void viewEmployee(Employee employee) {
         selectedEmployee = employee;
         actionMode = "view";
         message = "Viewing employee: " + employee.getEmployeeName();
+    }
+    
+    public void saveEmployee() {
+        try {
+            if (employeeDAO.addEmployee(newEmployee)) {
+                message = "Employee added successfully: " + newEmployee.getEmployeeName();
+                actionMode = "view";
+                newEmployee = new Employee();
+                loadAllEmployees(); // Refresh the list
+            } else {
+                message = "Failed to add employee";
+            }
+        } catch (Exception e) {
+            message = "Error adding employee: " + e.getMessage();
+            e.printStackTrace();
+        }
     }
     
     public List<Employee> getEmployees() {
@@ -220,5 +179,13 @@ public class EmployeeBean implements Serializable {
     
     public boolean isViewMode() {
         return "view".equals(actionMode);
+    }
+    
+    public String getCurrentForm() {
+        return currentForm;
+    }
+    
+    public void setCurrentForm(String currentForm) {
+        this.currentForm = currentForm;
     }
 }

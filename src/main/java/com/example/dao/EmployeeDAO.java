@@ -74,6 +74,27 @@ public class EmployeeDAO {
         }
     }
     
+    public boolean addEmployee(Employee employee) {
+        String sql = "INSERT INTO Mt_employee (employee_code, employee_name, employee_age, date_of_birth) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, employee.getEmployeeCode());
+            stmt.setString(2, employee.getEmployeeName());
+            stmt.setInt(3, employee.getEmployeeAge());
+            stmt.setDate(4, new java.sql.Date(employee.getDateOfBirth().getTime()));
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error adding employee: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     public boolean testConnection() {
         try (Connection conn = getConnection()) {
             return conn != null && !conn.isClosed();
